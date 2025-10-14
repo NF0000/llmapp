@@ -1,0 +1,35 @@
+body {
+    font-family: 'Helvetica', sans-serif;
+    background-color: #f6f7fb;
+    margin: 2em;
+}
+
+h2 {
+    color: #444;
+}
+
+#chat-box {
+    background: white;
+    padding: 1em;
+    border-radius: 8px;
+    margin-bottom: 1em;
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+.user {
+    text-align: right;
+    color: #1b73e8;
+    margin: 0.5em 0;
+}
+
+.assistant {
+    text-align: left;
+    color: #2b2b2b;
+    background: #e8e8e8;
+    display: inline-block;
+    border-radius: 6px;
+    padding: 0.5em;
+    margin: 0.5em 0;
+}
