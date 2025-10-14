@@ -28,4 +28,4 @@ def insert_message(user_msg,reply):
 def get_recent_messages(limit=20):
     with engine.connect() as conn:
         rows=conn.excute(text("SELECT user_message, assistant_reply FROM chat_history ORDER BY id DESC LIMIT :n"),{"n":limit})
-        return [{"role":"user", "content":r[0]} for z in rows]
+        return [{"role":"user", "content":r[0]} for r in rows]
