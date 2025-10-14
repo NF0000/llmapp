@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: llmapp
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:

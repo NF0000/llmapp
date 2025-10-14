@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 import os
 import requests
+from db import init_db, insert_message, get_recent_messages
 
 app = FastAPI()
 
@@ -17,9 +18,15 @@ load_dotenv()
 LMSTUDIO_API = os.getenv("LMSTUDIO_API")
 MODEL = os.getenv("MODEL_NAME")
 
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "messages": []})
+    messages = get_recent_messages()
+    return templates.TemplateResponse("index.html", {"request": request, "messages": messages})
 
 @app.post("/chat", response_class=HTMLResponse)
 def chat(request: Request, message: str = Form(...)):
@@ -31,11 +38,7 @@ def chat(request: Request, message: str = Form(...)):
     response = requests.post(LMSTUDIO_API, json=payload)
     data = response.json()
     reply = data["choices"][0]["message"]["content"]
-
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request, "messages": [
-            {"role": "user", "content": message},
-            {"role": "assistant", "content": reply}
-        ]}
-    )
+    
+    insert_message(message,reply)
+    messages=get_recent_messages()
+    return templates.TemplateResponse("index.html",{"request": request, "messages": messages})
