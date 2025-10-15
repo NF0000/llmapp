@@ -7,3 +7,6 @@ LMStudioでサーバを起動することで、利用できるLLMチャットア
 LMSTUDIO_API=http://ローカルLLMのIPアドレス/v1/chat/completions
 MODEL_NAME=モデルの名前
 ```
+
+## 未実装
+- postgresqlの説明
