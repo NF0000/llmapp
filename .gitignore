@@ -16,6 +16,8 @@ env/
 coverage.xml
 htmlcov/
 .tox/
+*.pdf
+*.pkl
 
 # OS/IDE
 .DS_Store
