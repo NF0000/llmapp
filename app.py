@@ -28,6 +28,11 @@ def index(request: Request):
     messages = get_recent_messages()
     return templates.TemplateResponse("index.html", {"request": request, "messages": messages})
 
+@app.get("/chat", response_class=HTMLResponse)
+def chat(request: Request):
+    messages = get_recent_messages()
+    return templates.TemplateResponse("index.html", {"request": request, "messages": messages})
+
 @app.post("/chat", response_class=HTMLResponse)
 def chat(request: Request, message: str = Form(...)):
     payload = {
