@@ -42,3 +42,11 @@ def get_recent_messages(limit=20):
             messages.append({"role":"assistant","content":assistant_reply})
             messages.append({"role":"user","content":user_msg})
         return messages
+    
+def clear_chat_history():
+    """
+    chat_history テーブルの全データを削除
+    """
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM chat_history"))
+    print("データベースを削除")

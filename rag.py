@@ -10,7 +10,6 @@ model=SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 INDEX_FILE="pdf_index.pkl"
 UPLOAD_DIR="uploads"
 
-#pdf登録
 def register_pdf(file_path:str):
     """
     pdfからテキストを抽出し、ベクトル化してFAISSに登録
@@ -38,7 +37,6 @@ def register_pdf(file_path:str):
         
     return len(chunks)
 
-#疑似検索
 def retrieve_context(query:str,top_k:int =3) -> str:
     """
     質問に関する文章を検索し、テキストを返す
@@ -54,3 +52,18 @@ def retrieve_context(query:str,top_k:int =3) -> str:
     retrieved="\n".join([chunks[i] for i in I[0]])
     
     return retrieved
+
+def clear_rag_data():
+    """
+    RAGで保存されたPDFデータとベクトルインデックスを削除
+    """
+    if os.path.exists(INDEX_FILE):
+        os.remove(INDEX_FILE)
+        print(f"{INDEX_FILE}を削除")
+        
+    if os.path.exists(UPLOAD_DIR):
+        for f in os.listdir(UPLOAD_DIR):
+            path=os.path.join(UPLOAD_DIR,f)
+            if os.path.isfile(path):
+                os.remove(path)
+        print("f{アップロードされたPFDを削除}")

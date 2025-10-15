@@ -1,13 +1,13 @@
 from fastapi import FastAPI, Request, Form
 from fastapi import UploadFile, File
-from rag import register_pdf, retrieve_context
+from rag import register_pdf, retrieve_context, clear_rag_data
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 import os
 import requests
-from db import init_db, insert_message, get_recent_messages
+from db import init_db, insert_message, get_recent_messages,clear_chat_history
 
 app = FastAPI()
 
@@ -49,6 +49,7 @@ def chat(request: Request, message: str = Form(...)):
     質問:{message}
     """
     
+    print(prompt)
     payload = {
         "model": MODEL,
         "messages": [{"role": "user", "content": prompt}],
@@ -72,4 +73,10 @@ async def upload_pdf(file:UploadFile=File(...)):
         
         num_chunks=register_pdf(file_path)
         return {"message":f"{file.filename}を登録しました({num_chunks}チャンクに分割)"}
+    
+@app.post("/clear_data")
+def clear_data():
+    clear_chat_history()
+    clear_rag_data()
+    return {"message":"All chat and RAG data cleared"}
     
