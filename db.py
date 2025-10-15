@@ -8,6 +8,9 @@ DB_URL=f"postgresql+psycopg2://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES
 engine=create_engine(DB_URL,echo=True)
 
 def init_db():
+    """
+    データベースの初期化
+    """
     with engine.begin() as conn:
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS chat_history (
@@ -19,6 +22,9 @@ def init_db():
         """))
         
 def insert_message(user_msg,reply):
+    """
+    会話内容をデータベースに追加
+    """
     with engine.begin() as conn:
         conn.execute(
             text("INSERT INTO chat_history (user_message,assistant_reply) VALUES(:m,:r)"),
@@ -26,6 +32,9 @@ def insert_message(user_msg,reply):
         )
         
 def get_recent_messages(limit=20):
+    """
+    会話内容を出力
+    """
     with engine.connect() as conn:
         rows=conn.execute(text("SELECT user_message, assistant_reply FROM chat_history ORDER BY id DESC LIMIT :n"),{"n":limit})
         messages=[]

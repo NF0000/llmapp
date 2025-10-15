@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request, Form
+from fastapi import UploadFile, File
+from rag import register_pdf, retrieve_context
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -33,11 +35,23 @@ def chat(request: Request):
     messages = get_recent_messages()
     return templates.TemplateResponse("index.html", {"request": request, "messages": messages})
 
-@app.post("/chat", response_class=HTMLResponse)
+@app.post("/chat")
 def chat(request: Request, message: str = Form(...)):
+    #RAG検索
+    context=retrieve_context(message)
+    
+    #LLMへ渡すプロンプトを生成
+    prompt=f"""
+    以下の資料内容を参考にして質問に答えてください。
+    ---
+    {context}
+    ---
+    質問:{message}
+    """
+    
     payload = {
         "model": MODEL,
-        "messages": [{"role": "user", "content": message}],
+        "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7
     }
     response = requests.post(LMSTUDIO_API, json=payload)
@@ -47,3 +61,15 @@ def chat(request: Request, message: str = Form(...)):
     insert_message(message,reply)
     messages=get_recent_messages()
     return templates.TemplateResponse("index.html",{"request": request, "messages": messages})
+
+@app.post("/upload_pdf")
+async def upload_pdf(file:UploadFile=File(...)):
+    os.makedirs("uploads",exist_ok=True)
+    file_path=f"uploads/{file.filename}"
+    
+    with open(file_path,"wb") as f:
+        f.write(await file.read())
+        
+        num_chunks=register_pdf(file_path)
+        return {"message":f"{file.filename}を登録しました({num_chunks}チャンクに分割)"}
+    
