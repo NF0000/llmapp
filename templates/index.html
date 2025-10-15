@@ -9,7 +9,7 @@
     <h2>Local LLM Chat</h2>
 
     <div id="chat-box">
-        {% for msg in messages %}
+        {% for msg in messages|reverse %}
             {% if msg.role == "user" %}
                 <div class="user"><b>あなた:</b> {{ msg.content }}</div>
             {% else %}
